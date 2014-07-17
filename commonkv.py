@@ -141,3 +141,51 @@ class GenericThread(threading.Thread):
 
     def stop(self):
         self.join(2000)
+
+########################################################################################
+
+import math
+
+
+class Stream_stats():
+    """
+    Uses numerical methods to calculate ongoing mean and variance without holding large sums in memory
+    Con is for small sample sizes, there may be some inaccuracy
+    After creating an instance, call update() with the varaible you want stats on
+    Reset variance (reset_var) can be called, keeping last mean as starting point
+    In addition, init_mean can be used if a previous mean is known
+    """
+
+    def __init__(self):
+        self.last_mean = None
+        self.last_var = 0.0
+        self.n = 0
+
+    def update(self, x):
+        self.n += 1
+        if self.last_mean is None:
+            self.last_mean = x
+        alpha = 1.0/self.n
+        m = self.last_mean + (x - self.last_mean)/self.n
+        v = ((self.n - 1) * self.last_var + (x - self.last_mean) * (x - m)) * alpha
+        self.last_mean = m
+        self.last_var = v
+
+    def mean(self):
+        return self.last_mean
+
+    def var(self):
+        return self.last_var
+
+    def sd(self):
+        return math.sqrt(self.last_var)
+
+    def count(self):
+        return self.n
+
+    def reset_var(self):
+        self.last_var = 0.0
+        self.n = 0
+
+    def init_mean(self, m):
+        self.last_mean = m
