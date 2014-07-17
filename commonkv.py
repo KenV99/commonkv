@@ -154,6 +154,8 @@ class Stream_stats():
     After creating an instance, call update() with the varaible you want stats on
     Reset variance (reset_var) can be called, keeping last mean as starting point
     In addition, init_mean can be used if a previous mean is known
+    pdf returns the probabilty density function at x given the current mean and variance
+    cdf returns the cumulative distribution function
     """
 
     def __init__(self):
@@ -189,3 +191,12 @@ class Stream_stats():
 
     def init_mean(self, m):
         self.last_mean = m
+
+    def pdf(self, x):
+        denom = math.sqrt(2*math.pi*self.last_var)
+        num = math.exp(-(float(x)-float(self.last_mean))**2/(2*self.last_var))
+        return num/denom
+
+    def cdf(self, x):
+        return 0.5 * (1 + math.erf((x - self.last_mean)/math.sqrt(2 * self.last_var)))
+
